@@ -31,6 +31,37 @@ or by hand: `pnpm add -D @rathkit/nx @rathkit/pack@next` and add `"@rathkit/nx"`
 - **Executors** `@rathkit/nx:build` and `@rathkit/nx:serve` for targets written by hand in `project.json`.
 - **Libraries**: library mode, declarations and `exports`.
 
+## Targets written by hand
+
+Without the plugin (or to override it), use the executors in a `project.json`. Options are in `src/executors/*/schema.json`; `args` passes any other
+`rkp` flag as written. `nx.json` can set the shared parts once:
+
+```json
+{
+  "targetDefaults": {
+    "@rathkit/nx:build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default", "!{projectRoot}/dist/**/*", { "externalDependencies": ["@rathkit/pack"] }],
+      "outputs": ["{options.outputPath}"]
+    }
+  }
+}
+```
+
+```json
+{
+  "name": "web",
+  "targets": {
+    "build": { "executor": "@rathkit/nx:build", "options": { "outputPath": "{projectRoot}/dist", "minify": true } },
+    "serve": { "executor": "@rathkit/nx:serve", "options": { "port": 4200 } }
+  }
+}
+```
+
+The program is found from the `rkpBin` option, then the `RATHKIT_PACK_BIN` variable, then the installed `@rathkit/pack`, then `rkp` on `PATH`.
+`outputPath` is deleted before a build (`"clean": false` keeps it).
+
 ## Develop
 
 Node and pnpm versions are in `package.json` (`engines`, `packageManager`) and `.node-version`. Use pnpm, never npm or yarn.

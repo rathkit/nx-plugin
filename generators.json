@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "init": {
+      "factory": "./src/generators/init/generator",
+      "schema": "./src/generators/init/schema.json",
+      "description": "Register the plugin, add @rathkit/pack and opt projects in to being built with rkp."
+    }
+  }
+}

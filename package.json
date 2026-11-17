@@ -24,6 +24,7 @@
     ".": "./plugin.js",
     "./plugin": "./plugin.js",
     "./executors.json": "./executors.json",
+    "./generators.json": "./generators.json",
     "./package.json": "./package.json"
   },
   "executors": "./executors.json",
@@ -31,6 +32,7 @@
     "plugin.js",
     "src",
     "executors.json",
+    "generators.json",
     "README.md",
     "LICENSE",
     "NOTICE"
@@ -56,5 +58,6 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "generators": "./generators.json"
 }

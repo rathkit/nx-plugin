@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Initialize @rathkit/nx",
+  "description": "Registers the plugin in nx.json, adds @rathkit/pack to the dev dependencies, and opts projects in with a rathkit.config.mjs.",
+  "type": "object",
+  "properties": {
+    "project": {
+      "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+      "description": "Projects to build with rkp (a rathkit.config.mjs is created in each). Default: every project with an index.html or a src/main or src/index file that has no build target yet."
+    },
+    "skipConfig": { "type": "boolean", "description": "Do not create rathkit.config.mjs files.", "default": false },
+    "skipPackageJson": { "type": "boolean", "description": "Do not add @rathkit/pack to package.json.", "default": false },
+    "packVersion": { "type": "string", "description": "The version or tag of @rathkit/pack to add.", "default": "next" },
+    "keepExistingVersions": { "type": "boolean", "description": "Keep the version of @rathkit/pack if package.json already has one.", "default": false },
+    "skipFormat": { "type": "boolean", "description": "Do not format the files that change.", "default": false }
+  },
+  "additionalProperties": true
+}

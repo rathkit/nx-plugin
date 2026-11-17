@@ -1,0 +1,4 @@
+{
+  "nx": ["24.0.6", "23.3.2"],
+  "note": "The newest release of the current and the previous Nx major. Update when a new Nx release comes out; the peer range in package.json must match."
+}

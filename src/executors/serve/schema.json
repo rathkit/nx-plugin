@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Rathkit serve",
+  "description": "Runs rkp serve, the development server.",
+  "type": "object",
+  "properties": {
+    "entry": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "The entry or entries, relative to the project root. Default: index.html, else src/main.* or src/index.*."
+    },
+    "minify": {
+      "type": "boolean",
+      "description": "Minify the output.",
+      "default": false
+    },
+    "sourcemap": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "inline",
+            "external"
+          ]
+        }
+      ],
+      "description": "Write source maps."
+    },
+    "target": {
+      "type": "string",
+      "description": "es2015 ... es2025, esnext, or engines such as chrome80,safari13.1."
+    },
+    "external": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Packages left out of the bundle."
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Extra export conditions."
+    },
+    "define": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Constants replaced in the code, KEY to VALUE."
+    },
+    "loader": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "File extension to loader, such as .svg to file."
+    },
+    "alias": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Module name to path."
+    },
+    "config": {
+      "type": "string",
+      "description": "A rathkit config file, relative to the workspace root. Default: rathkit.config.* in the project."
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "A tsconfig file, relative to the workspace root."
+    },
+    "mode": {
+      "type": "string",
+      "description": "The mode import.meta.env.MODE has."
+    },
+    "publicPath": {
+      "type": "string",
+      "description": "The public path of copied files."
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Further rkp arguments, passed as written."
+    },
+    "rkpBin": {
+      "type": "string",
+      "description": "The rkp program, relative to the workspace root. Default: the @rathkit/pack package, or RATHKIT_PACK_BIN."
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables for rkp."
+    },
+    "port": {
+      "type": "number",
+      "description": "The port to listen on.",
+      "default": 5173
+    },
+    "host": {
+      "type": "string",
+      "description": "The host to listen on."
+    },
+    "hmr": {
+      "type": "boolean",
+      "description": "Swap modules in place."
+    },
+    "https": {
+      "type": "boolean",
+      "description": "Serve over HTTPS."
+    }
+  },
+  "additionalProperties": false
+}

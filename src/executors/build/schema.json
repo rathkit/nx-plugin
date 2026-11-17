@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Rathkit build",
+  "description": "Builds a project with rkp bundle.",
+  "type": "object",
+  "properties": {
+    "entry": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "The entry or entries, relative to the project root. Default: index.html, else src/main.* or src/index.*."
+    },
+    "format": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "esm, cjs or iife; a list (or esm,cjs) builds both in one run."
+    },
+    "minify": {
+      "type": "boolean",
+      "description": "Minify the output.",
+      "default": false
+    },
+    "sourcemap": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "inline",
+            "external"
+          ]
+        }
+      ],
+      "description": "Write source maps."
+    },
+    "target": {
+      "type": "string",
+      "description": "es2015 ... es2025, esnext, or engines such as chrome80,safari13.1."
+    },
+    "external": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Packages left out of the bundle."
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Extra export conditions."
+    },
+    "define": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Constants replaced in the code, KEY to VALUE."
+    },
+    "loader": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "File extension to loader, such as .svg to file."
+    },
+    "alias": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Module name to path."
+    },
+    "config": {
+      "type": "string",
+      "description": "A rathkit config file, relative to the workspace root. Default: rathkit.config.* in the project."
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "A tsconfig file, relative to the workspace root."
+    },
+    "mode": {
+      "type": "string",
+      "description": "The mode import.meta.env.MODE has."
+    },
+    "publicPath": {
+      "type": "string",
+      "description": "The public path of copied files."
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Further rkp arguments, passed as written."
+    },
+    "rkpBin": {
+      "type": "string",
+      "description": "The rkp program, relative to the workspace root. Default: the @rathkit/pack package, or RATHKIT_PACK_BIN."
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables for rkp."
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Where the build is written, relative to the workspace root. Default: dist in the project.",
+      "x-completion-type": "directory"
+    },
+    "clean": {
+      "type": "boolean",
+      "description": "Delete outputPath before building.",
+      "default": true
+    },
+    "splitting": {
+      "type": "boolean",
+      "description": "Split shared code into chunks."
+    },
+    "watch": {
+      "type": "boolean",
+      "description": "Build again when a file changes, until stopped.",
+      "default": false
+    },
+    "metafile": {
+      "type": "string",
+      "description": "Write rkp's metafile (every module read and file written) to this path, relative to the workspace root. Keep it outside outputPath if the output is cached and compared across checkouts."
+    },
+    "dts": {
+      "type": "boolean",
+      "description": "Write declaration files (needs typescript installed)."
+    },
+    "dtsBundle": {
+      "type": "boolean",
+      "description": "With dts, one declaration file per entry."
+    },
+    "library": {
+      "type": "boolean",
+      "description": "Library mode: the entry is src/index.*, and several formats are written."
+    }
+  },
+  "additionalProperties": false
+}

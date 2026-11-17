@@ -1,0 +1,6 @@
+# Dev tools only; nothing here ships. nx's postinstall only updates the Nx Cloud client, which is not used.
+allowBuilds:
+  nx: false
+strictDepBuilds: true
+# Peer dependencies are declared, never auto-installed: the tests install them into each test workspace.
+autoInstallPeers: false

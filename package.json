@@ -1,0 +1,60 @@
+{
+  "name": "@rathkit/nx",
+  "version": "0.1.0-beta.0",
+  "description": "An Nx plugin for Rathkit Pack (rkp): inferred build, serve and watch tasks, executors, and an init generator (beta)",
+  "license": "Apache-2.0",
+  "keywords": [
+    "nx",
+    "nx-plugin",
+    "rathkit",
+    "rkp",
+    "bundler",
+    "beta"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rathkit/nx.git"
+  },
+  "homepage": "https://github.com/rathkit/nx#readme",
+  "bugs": "https://github.com/rathkit/nx/issues",
+  "packageManager": "pnpm@12.14.0",
+  "type": "commonjs",
+  "main": "./plugin.js",
+  "exports": {
+    ".": "./plugin.js",
+    "./plugin": "./plugin.js",
+    "./executors.json": "./executors.json",
+    "./package.json": "./package.json"
+  },
+  "executors": "./executors.json",
+  "files": [
+    "plugin.js",
+    "src",
+    "executors.json",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check:zero-deps": "node tools/check-zero-deps.mjs",
+    "check:denylist": "node tools/check-denylist.mjs",
+    "test": "node --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
+    "check": "pnpm check:zero-deps && pnpm test"
+  },
+  "peerDependencies": {
+    "@nx/devkit": "^23.0.0 || ^24.0.0",
+    "@rathkit/pack": "*",
+    "nx": "^23.0.0 || ^24.0.0"
+  },
+  "devDependencies": {
+    "@nx/devkit": "24.0.6",
+    "nx": "24.0.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

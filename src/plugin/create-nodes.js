@@ -23,9 +23,20 @@ function nxMajor(workspaceRoot) {
   }
 }
 
-function packInstalled(workspaceRoot, projectAbs) {
+/** A library has a package.json that says how it is consumed (main, module, types or exports) and no index.html. */
+function isLibrary(projectAbs) {
+  if (fs.existsSync(path.join(projectAbs, 'index.html'))) return false;
   try {
-    require.resolve('@rathkit/pack/package.json', { paths: [projectAbs, workspaceRoot] });
+    const manifest = JSON.parse(fs.readFileSync(path.join(projectAbs, 'package.json'), 'utf8'));
+    return ['main', 'module', 'types', 'exports'].some((key) => manifest[key] !== undefined);
+  } catch {
+    return false;
+  }
+}
+
+function installed(name, workspaceRoot, projectAbs) {
+  try {
+    require.resolve(`${name}/package.json`, { paths: [projectAbs, workspaceRoot] });
     return true;
   } catch {
     return false;
@@ -40,7 +51,7 @@ function packInstalled(workspaceRoot, projectAbs) {
  *  - the installed rkp, as a package of the workspace;
  *  - the variables rkp or the files it reads look at, and those named in the `env` option.
  */
-function buildInputs(options, { workspaceRoot, projectAbs }) {
+function buildInputs(options, { workspaceRoot, projectAbs, library }) {
   const inputs = [
     'default',
     '^default',
@@ -51,7 +62,9 @@ function buildInputs(options, { workspaceRoot, projectAbs }) {
     '{workspaceRoot}/browserslist',
     { fileset: '{projectRoot}/.env*', includeIgnored: true },
   ];
-  if (packInstalled(workspaceRoot, projectAbs)) inputs.push({ externalDependencies: ['@rathkit/pack'] });
+  if (installed('@rathkit/pack', workspaceRoot, projectAbs)) inputs.push({ externalDependencies: ['@rathkit/pack'] });
+  // Declaration files are written by the project's own typescript, so its version is an input too.
+  if (library && installed('typescript', workspaceRoot, projectAbs)) inputs.push({ externalDependencies: ['typescript'] });
   for (const name of ['NODE_ENV', 'BROWSERSLIST', 'BROWSERSLIST_ENV', ...options.env]) inputs.push({ env: name });
   return inputs;
 }
@@ -65,10 +78,11 @@ function targetsFor(options, ctx) {
     dependsOn: [`^${options.buildTargetName}`],
     inputs: buildInputs(options, ctx),
     outputs: ['{options.outputPath}'],
-    options: { outputPath },
-    metadata: { technologies: ['rathkit'], description: 'Build with rkp bundle' },
+    options: ctx.library ? { outputPath, library: true } : { outputPath },
+    metadata: { technologies: ['rathkit'], description: ctx.library ? 'Build the library with rkp bundle (esm, cjs, declarations)' : 'Build with rkp bundle' },
   };
-  targets[options.serveTargetName] = {
+  // A library is not served.
+  if (!ctx.library) targets[options.serveTargetName] = {
     executor: '@rathkit/nx:serve',
     cache: false,
     continuous: true,
@@ -76,13 +90,13 @@ function targetsFor(options, ctx) {
     options: {},
     metadata: { technologies: ['rathkit'], description: 'Serve with rkp serve' },
   };
-  if (ctx.major >= 24) targets[options.serveTargetName].readyWhen = { port: '{options.port ?? 5173}' };
+  if (!ctx.library && ctx.major >= 24) targets[options.serveTargetName].readyWhen = { port: '{options.port ?? 5173}' };
   targets[options.watchTargetName] = {
     executor: '@rathkit/nx:build',
     cache: false,
     continuous: true,
     dependsOn: [`^${options.buildTargetName}`],
-    options: { outputPath, watch: true },
+    options: ctx.library ? { outputPath, watch: true, library: true } : { outputPath, watch: true },
     metadata: { technologies: ['rathkit'], description: 'Build again on every change with rkp bundle --watch' },
   };
   return targets;
@@ -98,10 +112,11 @@ async function createNodesFunction(configFiles, userOptions, context) {
     const projectAbs = path.join(context.workspaceRoot, root);
     const owned = ['package.json', 'project.json'].some((f) => fs.existsSync(path.join(projectAbs, f)));
     if (!owned) continue;
-    if (!detectEntry(projectAbs)) continue;
+    const library = isLibrary(projectAbs);
+    if (!detectEntry(projectAbs, { library })) continue;
     results.push([
       configFile,
-      { projects: { [root]: { root, targets: targetsFor(options, { workspaceRoot: context.workspaceRoot, projectAbs, major }) } } },
+      { projects: { [root]: { root, targets: targetsFor(options, { workspaceRoot: context.workspaceRoot, projectAbs, major, library }) } } },
     ]);
   }
   return results;

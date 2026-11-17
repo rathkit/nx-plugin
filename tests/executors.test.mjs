@@ -76,7 +76,7 @@ describe("option mapping", () => {
   });
 });
 
-const target = (extra = {}) => ({ executor: "@rathkit/nx:build", options: { outputPath: "{projectRoot}/dist", ...extra } });
+const target = (extra) => ({ executor: "@rathkit/nx:build", options: { outputPath: "{projectRoot}/dist", ...extra } });
 
 /** The workspace of the inferred-task test, with the targets written by hand and no plugin. */
 function handWritten() {
@@ -84,9 +84,10 @@ function handWritten() {
   for (const key of Object.keys(files)) if (key.endsWith("rathkit.config.mjs")) delete files[key];
   for (const name of ["a", "b", "c", "l1", "l2"]) {
     const dir = name.startsWith("l") ? `libs/${name}` : `apps/${name}`;
+    const lib = name.startsWith("l");
     files[`${dir}/project.json`] = {
       name: `@ws/${name}`,
-      targets: { build: target(), serve: { executor: "@rathkit/nx:serve", options: {} }, watch: target({ watch: true }) },
+      targets: { build: target({ library: lib }), serve: { executor: "@rathkit/nx:serve", options: {} }, watch: target({ watch: true, library: lib }) },
     };
   }
   return files;

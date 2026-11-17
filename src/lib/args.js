@@ -27,7 +27,8 @@ function buildArgs(command, options, { projectAbs, workspaceRoot }) {
   const args = [command, ...entries];
 
   if (command === 'bundle') {
-    const formats = list(typeof o.format === 'string' ? o.format.split(',') : o.format);
+    const requested = list(typeof o.format === 'string' ? o.format.split(',') : o.format);
+    const formats = requested.length === 0 && library ? ['esm', 'cjs'] : requested;
     const html = entries.some((e) => e.endsWith('.html'));
     const single = entries.length === 1 && !html && !o.splitting && !library && formats.length <= 1;
     if (single) {
@@ -40,6 +41,10 @@ function buildArgs(command, options, { projectAbs, workspaceRoot }) {
     if (formats.length) args.push('--format', formats.join(','));
     if (o.watch) args.push('--watch');
     if (o.dts) args.push(o.dtsBundle ? '--dts-bundle' : '--dts');
+    if (library) {
+      if (o.packages !== 'bundle') args.push('--packages=external');
+      args.push(`--write-exports=${path.join(outputAbs, 'package.json')}`);
+    }
     if (o.metafile) args.push(`--metafile=${path.resolve(workspaceRoot, o.metafile)}`);
   } else {
     if (o.port !== undefined) args.push('--port', String(o.port));

@@ -151,7 +151,7 @@
     },
     "dts": {
       "type": "boolean",
-      "description": "Write declaration files (needs typescript installed)."
+      "description": "Write declaration files (needs typescript installed). In library mode the default is on when typescript and a tsconfig.json are found."
     },
     "dtsBundle": {
       "type": "boolean",
@@ -159,7 +159,15 @@
     },
     "library": {
       "type": "boolean",
-      "description": "Library mode: the entry is src/index.*, and several formats are written."
+      "description": "Library mode: the entry is src/index.*; esm and cjs are written; packages are left external; declaration files are written when typescript is installed; and a package.json with main, module, types and exports is written in outputPath (the project's own package.json is not edited)."
+    },
+    "packages": {
+      "type": "string",
+      "enum": [
+        "external",
+        "bundle"
+      ],
+      "description": "In library mode, whether packages are left out of the bundle. Default: external."
     }
   },
   "additionalProperties": false

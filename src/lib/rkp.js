@@ -64,4 +64,30 @@ function cleanOutput(outputAbs, { workspaceRoot, projectAbs }) {
   fs.rmSync(outputAbs, { recursive: true, force: true });
 }
 
-module.exports = { resolveRkp, runRkp, cleanOutput };
+/**
+ * The package.json a library is published from: the project's, copied into the output folder. rkp then rewrites main, module, types
+ * and exports in that copy (`--write-exports`), so the project's own package.json, which is an input of the build, is never edited.
+ * `scripts`, `devDependencies` and `files` are left out: the first two mean nothing to a consumer and the third names the source layout.
+ */
+function writeManifest(projectAbs, outputAbs) {
+  const manifest = JSON.parse(fs.readFileSync(path.join(projectAbs, 'package.json'), 'utf8'));
+  delete manifest.scripts;
+  delete manifest.devDependencies;
+  // The output folder is the package: everything in it is published, and `files` names paths of the source layout.
+  delete manifest.files;
+  for (const key of ['main', 'module', 'types', 'exports']) delete manifest[key];
+  fs.mkdirSync(outputAbs, { recursive: true });
+  fs.writeFileSync(path.join(outputAbs, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+}
+
+/** Whether `typescript` can be found from the project or the workspace root (declaration files need it). */
+function typescriptInstalled(projectAbs, workspaceRoot) {
+  try {
+    require.resolve('typescript/package.json', { paths: [projectAbs, workspaceRoot] });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+module.exports = { resolveRkp, runRkp, cleanOutput, writeManifest, typescriptInstalled };

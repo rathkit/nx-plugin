@@ -19,11 +19,12 @@ describe("inferred tasks: 3 apps and 2 libraries", { skip }, () => {
       const r = ws.nx("show", "project", P(name), "--json");
       assert.equal(r.status, 0, r.out);
       const { targets } = JSON.parse(r.stdout);
-      for (const t of ["build", "serve", "watch"]) assert.ok(targets[t], `${name}:${t}`);
+      for (const t of name.startsWith("l") ? ["build", "watch"] : ["build", "serve", "watch"]) assert.ok(targets[t], `${name}:${t}`);
+      assert.equal(Boolean(targets.serve), !name.startsWith("l"), "only applications are served");
       assert.equal(targets.build.cache, true);
       assert.deepEqual(targets.build.outputs, ["{options.outputPath}"]);
       assert.equal(targets.build.options.outputPath, `${name.startsWith("l") ? "libs" : "apps"}/${name}/dist`);
-      assert.equal(targets.serve.continuous, true);
+      if (targets.serve) assert.equal(targets.serve.continuous, true);
     }
   });
 

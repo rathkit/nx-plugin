@@ -9,13 +9,14 @@ import { fileURLToPath } from "node:url";
 export const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 // Never /tmp (a small tmpfs): the default is inside the repo's own node_modules, ignored by git.
 export const cacheRoot = process.env.RATHKIT_NX_TEST_DIR ?? join(repoRoot, "node_modules/.cache/rathkit-nx-test");
+export const TYPESCRIPT_VERSION = process.env.RATHKIT_TYPESCRIPT_VERSION ?? "5.9.3";
 export const NX_VERSION = process.env.RATHKIT_NX_VERSION ?? "24.0.6";
 
 const packDir = process.env.RATHKIT_PACK_DIR ?? join(homedir(), "code/rathkit/pack");
-/** The rkp program the tests run: RATHKIT_PACK_BIN, else a release build in the pack checkout. */
+/** The rkp program the tests run: RATHKIT_PACK_BIN. There is no fallback, so a stale build is never picked up by accident. */
 export function rkpBin() {
-  const candidates = [process.env.RATHKIT_PACK_BIN, join(packDir, "target/release/rkp")].filter(Boolean);
-  return candidates.find((c) => existsSync(c)) ?? null;
+  const bin = process.env.RATHKIT_PACK_BIN;
+  return bin && existsSync(bin) ? bin : null;
 }
 /** How workspaces install @rathkit/pack: a path (file:) or an npm spec. */
 export const packSpec = process.env.RATHKIT_PACK_SPEC ?? `file:${join(packDir, "npm/pack")}`;
@@ -60,7 +61,7 @@ export function createWorkspace(name, files, options = {}) {
   const root = join(ensure(cacheRoot), `${name}-nx${nx.replace(/\..*/, "")}`);
   rmSync(root, { recursive: true, force: true });
   mkdirSync(root, { recursive: true });
-  const dev = { nx, "@nx/devkit": nx, "@rathkit/pack": packSpec, ...options.extraDev };
+  const dev = { nx, "@nx/devkit": nx, "@rathkit/pack": packSpec, typescript: TYPESCRIPT_VERSION, ...options.extraDev };
   if (options.install !== false) dev["@rathkit/nx"] = `file:${packPlugin()}`;
   const all = {
     "package.json": { name: "ws", private: true, version: "0.0.0", devDependencies: dev },
@@ -127,7 +128,15 @@ export function fiveProjectFiles() {
     [`apps/${name}/src/main.ts`]: `${deps.map((d, i) => `import { ${d} } from "@ws/${d}";\n`).join("")}console.log("${name}", ${deps.map((d) => `${d}()`).join(", ") || "0"});\n`,
   });
   const lib = (name) => ({
-    [`libs/${name}/package.json`]: { name: `@ws/${name}`, version: "1.0.0", type: "module", main: "./dist/index.js" },
+    [`libs/${name}/package.json`]: {
+      name: `@ws/${name}`,
+      version: "1.0.0",
+      type: "module",
+      files: ["dist"],
+      main: "./dist/index.cjs",
+      types: "./dist/index.d.ts",
+      exports: { ".": { types: "./dist/index.d.ts", import: "./dist/index.mjs", require: "./dist/index.cjs" } },
+    },
     [`libs/${name}/rathkit.config.mjs`]: cfg,
     [`libs/${name}/tsconfig.json`]: { extends: "../../tsconfig.base.json", include: ["src"] },
     [`libs/${name}/src/index.ts`]: `export const ${name} = (): string => "${name}-v1";\n`,

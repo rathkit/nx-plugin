@@ -29,7 +29,17 @@ or by hand: `pnpm add -D @rathkit/nx @rathkit/pack@next` and add `"@rathkit/nx"`
 - **Inferred tasks** (`createNodes`): a project with a `rathkit.config.{mjs,js,cjs}` next to its `package.json` or `project.json` gets `build`, `serve` and
   `watch`, with inputs, outputs, caching and `dependsOn: ["^build"]` set. See [docs/spike-9.1.md](docs/spike-9.1.md) for how the inputs are chosen.
 - **Executors** `@rathkit/nx:build` and `@rathkit/nx:serve` for targets written by hand in `project.json`.
-- **Libraries**: library mode, declarations and `exports`.
+- **Libraries**: a project whose `package.json` has `main`, `module`, `types` or `exports` (and no `index.html`) builds in library mode: ES module
+  (`.mjs`) and CommonJS (`.cjs`) files, declaration files when `typescript` and a `tsconfig.json` are found, packages left external, and a
+  `package.json` in the output folder with `main`, `module`, `types` and `exports` written by rkp. The output folder is the package to publish (`pnpm publish dist`).
+  The project's own `package.json` is never edited by a build. For the other projects of the workspace to consume the library, point its own fields at `dist`:
+
+  ```json
+  { "files": ["dist"], "main": "./dist/index.cjs", "types": "./dist/index.d.ts",
+    "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.mjs", "require": "./dist/index.cjs" } } }
+  ```
+
+  A library is not served; `build` and `watch` are inferred, and the apps that use it get `dependsOn: ["^build"]`.
 
 ## Targets written by hand
 
@@ -72,8 +82,8 @@ pnpm check       # zero-deps check and the tests
 ```
 
 The tests build real Nx workspaces in `node_modules/.cache/rathkit-nx-test` (override with `RATHKIT_NX_TEST_DIR`), install `nx` and `@nx/devkit`
-from the network, and need an `rkp` program: set `RATHKIT_PACK_BIN`, or build `rathkit/pack` next to this repository
-(`cargo build --release`). `RATHKIT_NX_VERSION` picks the Nx version (default 24.0.6); `RATHKIT_PACK_SPEC` picks how `@rathkit/pack` is
+from the network, and need an `rkp` program: set `RATHKIT_PACK_BIN` to a release build of `rathkit/pack`
+(`cargo build --release`); without it they are skipped. `RATHKIT_NX_VERSION` picks the Nx version (default 24.0.6); `RATHKIT_PACK_SPEC` picks how `@rathkit/pack` is
 installed into the workspaces (default: the `npm/pack` folder of the checkout).
 
 ## Contributing

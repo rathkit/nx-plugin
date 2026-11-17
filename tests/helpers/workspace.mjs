@@ -116,3 +116,84 @@ const taskLine = (out, task) => stripAnsi(out).split("\n").map((l) => l.trim()).
 export const wasCached = (out, task) => /\[local cache\]/.test(taskLine(out, task) ?? "");
 /** Whether the task ran and was not read from the cache. */
 export const wasRun = (out, task) => taskLine(out, task) !== undefined && !wasCached(out, task);
+
+/** A workspace of 3 apps and 2 libraries: a uses l1; b uses l1 and l2; c uses nothing. Each has a rathkit.config.mjs. */
+export function fiveProjectFiles() {
+  const cfg = "export default {};\n";
+  const app = (name, deps) => ({
+    [`apps/${name}/package.json`]: { name: `@ws/${name}`, version: "1.0.0", private: true, type: "module", dependencies: Object.fromEntries(deps.map((d) => [`@ws/${d}`, "workspace:*"])) },
+    [`apps/${name}/rathkit.config.mjs`]: cfg,
+    [`apps/${name}/tsconfig.json`]: { extends: "../../tsconfig.base.json", include: ["src"] },
+    [`apps/${name}/src/main.ts`]: `${deps.map((d, i) => `import { ${d} } from "@ws/${d}";\n`).join("")}console.log("${name}", ${deps.map((d) => `${d}()`).join(", ") || "0"});\n`,
+  });
+  const lib = (name) => ({
+    [`libs/${name}/package.json`]: { name: `@ws/${name}`, version: "1.0.0", type: "module", main: "./dist/index.js" },
+    [`libs/${name}/rathkit.config.mjs`]: cfg,
+    [`libs/${name}/tsconfig.json`]: { extends: "../../tsconfig.base.json", include: ["src"] },
+    [`libs/${name}/src/index.ts`]: `export const ${name} = (): string => "${name}-v1";\n`,
+  });
+  return {
+    "tsconfig.base.json": { compilerOptions: { strict: true, module: "esnext", moduleResolution: "bundler", target: "es2022" } },
+    ...app("a", ["l1"]),
+    ...app("b", ["l1", "l2"]),
+    ...app("c", []),
+    ...lib("l1"),
+    ...lib("l2"),
+  };
+}
+
+import { spawn } from "node:child_process";
+import { createServer } from "node:net";
+
+/** A free TCP port. */
+export function freePort() {
+  return new Promise((ok, fail) => {
+    const server = createServer();
+    server.on("error", fail);
+    server.listen(0, "127.0.0.1", () => {
+      const { port } = server.address();
+      server.close(() => ok(port));
+    });
+  });
+}
+
+export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Polls `check` (sync or async, truthy when done) until it passes or `timeout` ms go by. */
+export async function waitFor(check, { timeout = 30000, interval = 100, what = "the condition" } = {}) {
+  const end = Date.now() + timeout;
+  for (;;) {
+    let value;
+    try {
+      value = await check();
+    } catch {
+      value = false;
+    }
+    if (value) return value;
+    if (Date.now() > end) throw new Error(`timed out waiting for ${what}`);
+    await sleep(interval);
+  }
+}
+
+/** Starts `nx ...` in the background in its own process group; stop() ends the whole group. */
+export function nxBackground(root, args, env = {}) {
+  const child = spawn("pnpm", ["exec", "nx", ...args], { cwd: root, env: { ...testEnv, NX_CACHE_DIRECTORY: join(root, ".nx/cache"), ...env }, detached: true, stdio: ["ignore", "pipe", "pipe"] });
+  let output = "";
+  child.stdout.on("data", (d) => (output += d));
+  child.stderr.on("data", (d) => (output += d));
+  const exited = new Promise((r) => child.on("close", r));
+  return {
+    child,
+    output: () => stripAnsi(output),
+    exited,
+    async stop() {
+      try {
+        process.kill(-child.pid, "SIGTERM");
+      } catch {}
+      await Promise.race([exited, sleep(10000)]);
+      try {
+        process.kill(-child.pid, "SIGKILL");
+      } catch {}
+    },
+  };
+}

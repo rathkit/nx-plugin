@@ -2,9 +2,9 @@
 const { addDependenciesToPackageJson, formatFiles, getProjects, joinPathFragments, readNxJson, updateNxJson } = require('@nx/devkit');
 const { detectEntry } = require('../../lib/entry');
 
-const PLUGIN = '@rathkit/nx';
+const PLUGIN = '@rathkit/nx-plugin';
 const CONFIG_FILES = ['mjs', 'js', 'cjs'].map((e) => `rathkit.config.${e}`);
-const CONFIG_TEXT = '// Options for rkp (Rathkit Pack), run by Nx through @rathkit/nx. An empty object takes the defaults.\nexport default {};\n';
+const CONFIG_TEXT = '// Options for rkp (Rathkit Pack), run by Nx through @rathkit/nx-plugin. An empty object takes the defaults.\nexport default {};\n';
 
 function pluginRegistered(nxJson) {
   return (nxJson.plugins ?? []).some((p) => (typeof p === 'string' ? p : p.plugin) === PLUGIN);
@@ -40,7 +40,7 @@ async function initGenerator(tree, options = {}) {
     const requested = options.project === undefined ? candidates(tree) : [].concat(options.project);
     for (const name of requested) {
       const config = projects.get(name);
-      if (!config) throw new Error(`@rathkit/nx: there is no project "${name}"`);
+      if (!config) throw new Error(`@rathkit/nx-plugin: there is no project "${name}"`);
       if (CONFIG_FILES.some((f) => tree.exists(joinPathFragments(config.root, f)))) continue;
       const file = joinPathFragments(config.root, 'rathkit.config.mjs');
       tree.write(file, CONFIG_TEXT);

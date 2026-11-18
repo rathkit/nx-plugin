@@ -17,7 +17,7 @@ function buildArgs(command, options, { projectAbs, workspaceRoot }) {
     const found = detectEntry(projectAbs, { library });
     if (!found) {
       throw new Error(
-        `@rathkit/nx: no entry found in ${path.relative(workspaceRoot, projectAbs) || '.'}. ` +
+        `@rathkit/nx-plugin: no entry found in ${path.relative(workspaceRoot, projectAbs) || '.'}. ` +
           'Set the "entry" option, or add index.html, src/main.ts or src/index.ts.',
       );
     }

@@ -62,11 +62,11 @@ export function createWorkspace(name, files, options = {}) {
   rmSync(root, { recursive: true, force: true });
   mkdirSync(root, { recursive: true });
   const dev = { nx, "@nx/devkit": nx, "@rathkit/pack": packSpec, typescript: TYPESCRIPT_VERSION, ...options.extraDev };
-  if (options.install !== false) dev["@rathkit/nx"] = `file:${packPlugin()}`;
+  if (options.install !== false) dev["@rathkit/nx-plugin"] = `file:${packPlugin()}`;
   const all = {
     "package.json": { name: "ws", private: true, version: "0.0.0", devDependencies: dev },
     "pnpm-workspace.yaml": 'packages: ["apps/*", "libs/*"]\nallowBuilds:\n  nx: false\nstrictDepBuilds: false\nautoInstallPeers: false\n',
-    "nx.json": options.nxJson ?? { plugins: options.install === false ? [] : ["@rathkit/nx"] },
+    "nx.json": options.nxJson ?? { plugins: options.install === false ? [] : ["@rathkit/nx-plugin"] },
     ".gitignore": "node_modules\n.nx\ndist\n",
     ...files,
   };

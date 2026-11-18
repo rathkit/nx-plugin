@@ -36,7 +36,7 @@ put({
 
 describe("createNodes", () => {
   test("the plugin is exported as createNodes and createNodesV2, the same value", () => {
-    assert.equal(plugin.name, "@rathkit/nx");
+    assert.equal(plugin.name, "@rathkit/nx-plugin");
     assert.equal(plugin.createNodes, plugin.createNodesV2);
     assert.equal(plugin.createNodes[0], "**/rathkit.config.{mjs,js,cjs}");
   });
@@ -50,7 +50,7 @@ describe("createNodes", () => {
   test("build, serve and watch say how they are cached and ordered", async () => {
     const [[, { projects }]] = await run(["apps/web/rathkit.config.mjs"]);
     const { build, serve, watch } = projects["apps/web"].targets;
-    assert.equal(build.executor, "@rathkit/nx:build");
+    assert.equal(build.executor, "@rathkit/nx-plugin:build");
     assert.equal(build.cache, true);
     assert.deepEqual(build.dependsOn, ["^build"]);
     assert.deepEqual(build.outputs, ["{options.outputPath}"]);
@@ -59,11 +59,11 @@ describe("createNodes", () => {
     assert.ok(build.inputs.includes("!{projectRoot}/dist/**/*"), "the output folder is not an input");
     assert.ok(build.inputs.some((i) => i.fileset === "{projectRoot}/.env*" && i.includeIgnored === true));
     assert.ok(build.inputs.some((i) => i.env === "NODE_ENV"));
-    assert.equal(serve.executor, "@rathkit/nx:serve");
+    assert.equal(serve.executor, "@rathkit/nx-plugin:serve");
     assert.equal(serve.cache, false);
     assert.equal(serve.continuous, true);
     assert.deepEqual(serve.dependsOn, ["^build"]);
-    assert.equal(watch.executor, "@rathkit/nx:build");
+    assert.equal(watch.executor, "@rathkit/nx-plugin:build");
     assert.equal(watch.options.watch, true);
     assert.equal(watch.continuous, true);
     assert.equal(watch.cache, false);

@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest something @rathkit/nx should do.
+description: Suggest something @rathkit/nx-plugin should do.
 labels: [enhancement]
 body:
   - type: textarea

@@ -1,6 +1,6 @@
 # Governance
 
-@rathkit/nx is run by its owner, Rathkit LLC, through the maintainer listed in
+@rathkit/nx-plugin is run by its owner, Rathkit LLC, through the maintainer listed in
 [MEMBERS.md](MEMBERS.md). While the project is young the owner decides, and this page says how
 that is done so it is not a surprise.
 

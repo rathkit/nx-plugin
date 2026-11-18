@@ -1,6 +1,6 @@
 # AI policy
 
-How @rathkit/nx expects contributors to use AI tools such as coding agents and chat assistants. It
+How @rathkit/nx-plugin expects contributors to use AI tools such as coding agents and chat assistants. It
 applies to every contributor and maintainer in every Rathkit repository, and it is part of the
 contribution rules in [CONTRIBUTING.md](CONTRIBUTING.md).
 

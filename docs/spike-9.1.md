@@ -8,7 +8,7 @@ The test is `tests/spike.test.mjs`: it builds a workspace in a scratch folder, i
 
 ## What was built
 
-A workspace of two projects with hand-written `project.json` targets (the executor is the one the plugin ships, `@rathkit/nx:build`):
+A workspace of two projects with hand-written `project.json` targets (the executor is the one the plugin ships, `@rathkit/nx-plugin:build`):
 
 - `libs/greeter`: a package whose `main` is `./dist/index.js`; the target builds `src/index.ts`.
 - `apps/web`: depends on `@ws/greeter` through pnpm's `workspace:*`; the target builds `src/main.ts` and has `dependsOn: ["^build"]`.
@@ -82,9 +82,9 @@ both, so the plugin exports the same value under both names).
   config file is rkp's own marker, it is what rkp reads, and the init generator can create an empty one. A project is only claimed when the
   folder also has a `package.json` or `project.json`, and an entry rkp can build is found. Projects of any other kind are left alone.
 - **Entry:** `index.html`, else `src/main.*`, else `src/index.*`, else `main.*`, `index.*` (extensions ts tsx mts js jsx mjs).
-- **`build`:** executor `@rathkit/nx:build`; `cache: true`; `dependsOn: ["^build"]`; the inputs above; `outputs: ["{options.outputPath}"]`;
+- **`build`:** executor `@rathkit/nx-plugin:build`; `cache: true`; `dependsOn: ["^build"]`; the inputs above; `outputs: ["{options.outputPath}"]`;
   `options.outputPath: "{projectRoot}/dist"`.
-- **`serve`:** executor `@rathkit/nx:serve`; `continuous: true`; `cache: false`; `dependsOn: ["^build"]`; on Nx 24 and later `readyWhen` is
+- **`serve`:** executor `@rathkit/nx-plugin:serve`; `continuous: true`; `cache: false`; `dependsOn: ["^build"]`; on Nx 24 and later `readyWhen` is
   the server's port (`{options.port ?? 5173}`). Nx 23 has `continuous` but no `readyWhen`.
 - **`watch`:** the build executor with `watch: true`; `continuous: true`; `cache: false`; `dependsOn: ["^build"]`.
 - **Names and folders** are plugin options (`buildTargetName`, `serveTargetName`, `watchTargetName`, `outDir`, `env`), so they fit a workspace's own

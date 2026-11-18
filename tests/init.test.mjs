@@ -1,4 +1,4 @@
-// The init generator: on a virtual tree, and through `nx add @rathkit/nx` in a real clean workspace.
+// The init generator: on a virtual tree, and through `nx add @rathkit/nx-plugin` in a real clean workspace.
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -29,7 +29,7 @@ describe("init generator on a tree", () => {
     const tree = treeWithProjects();
     await init(tree, { skipFormat: true });
     await init(tree, { skipFormat: true });
-    assert.deepEqual(readNxJson(tree).plugins.filter((p) => p === "@rathkit/nx"), ["@rathkit/nx"]);
+    assert.deepEqual(readNxJson(tree).plugins.filter((p) => p === "@rathkit/nx-plugin"), ["@rathkit/nx-plugin"]);
     assert.equal(readJson(tree, "package.json").devDependencies["@rathkit/pack"], "next");
     assert.ok(tree.exists("apps/web/rathkit.config.mjs"));
     assert.ok(tree.exists("apps/site/rathkit.config.mjs"));
@@ -54,32 +54,32 @@ describe("init generator on a tree", () => {
     const tree = treeWithProjects();
     writeJson(tree, "package.json", { name: "ws", devDependencies: { "@rathkit/pack": "0.3.0-beta.0" } });
     const nxJson = readNxJson(tree);
-    nxJson.plugins = [{ plugin: "@rathkit/nx", options: { outDir: "out" } }];
+    nxJson.plugins = [{ plugin: "@rathkit/nx-plugin", options: { outDir: "out" } }];
     writeJson(tree, "nx.json", nxJson);
     await init(tree, { keepExistingVersions: true, skipFormat: true });
     assert.equal(readJson(tree, "package.json").devDependencies["@rathkit/pack"], "0.3.0-beta.0");
-    assert.deepEqual(readNxJson(tree).plugins, [{ plugin: "@rathkit/nx", options: { outDir: "out" } }]);
+    assert.deepEqual(readNxJson(tree).plugins, [{ plugin: "@rathkit/nx-plugin", options: { outDir: "out" } }]);
   });
 });
 
 const skip = rkpBin() ? false : "no rkp binary: set RATHKIT_PACK_BIN";
 
-describe("nx add @rathkit/nx in a clean workspace", { skip }, () => {
+describe("nx add @rathkit/nx-plugin in a clean workspace", { skip }, () => {
   test("one command, then a first build", () => {
     const files = {
       "apps/web/package.json": { name: "@ws/web", version: "1.0.0", private: true, type: "module" },
       "apps/web/index.html": '<!doctype html><html><body><script type="module" src="/src/main.ts"></script></body></html>\n',
       "apps/web/src/main.ts": 'console.log("first build");\n',
     };
-    // The plugin is not installed and nx.json has no plugins: this is a workspace that has never heard of @rathkit/nx.
+    // The plugin is not installed and nx.json has no plugins: this is a workspace that has never heard of @rathkit/nx-plugin.
     const ws = createWorkspace("add", files, { install: false });
     assert.deepEqual(JSON.parse(readFileSync(ws.path("nx.json"), "utf8")).plugins, []);
 
-    const added = ws.nx("add", `@rathkit/nx@file:${packPlugin()}`);
+    const added = ws.nx("add", `@rathkit/nx-plugin@file:${packPlugin()}`);
     assert.equal(added.status, 0, added.out);
-    assert.ok(readNxJsonFile(ws).plugins.includes("@rathkit/nx"), added.out);
+    assert.ok(readNxJsonFile(ws).plugins.includes("@rathkit/nx-plugin"), added.out);
     const dev = JSON.parse(readFileSync(ws.path("package.json"), "utf8")).devDependencies;
-    assert.ok(dev["@rathkit/nx"], "the plugin is a dev dependency");
+    assert.ok(dev["@rathkit/nx-plugin"], "the plugin is a dev dependency");
     assert.match(dev["@rathkit/pack"], /^file:/, "keepExistingVersions: the version already there is kept");
     assert.ok(existsSync(ws.path("apps/web/rathkit.config.mjs")), "the project is opted in");
 

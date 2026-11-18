@@ -1,4 +1,4 @@
-// Spike 9.1: an Nx workspace builds an app and a library with rkp through the @rathkit/nx executor.
+// Spike 9.1: an Nx workspace builds an app and a library with rkp through the @rathkit/nx-plugin executor.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -9,7 +9,7 @@ import { createWorkspace, rkpBin, sampleFiles, wasCached, wasRun } from "./helpe
 const skip = rkpBin() ? false : "no rkp binary: set RATHKIT_PACK_BIN";
 
 const target = (extra = {}) => ({
-  executor: "@rathkit/nx:build",
+  executor: "@rathkit/nx-plugin:build",
   cache: true,
   inputs: ["default", "^default", "!{projectRoot}/dist/**/*", { externalDependencies: ["@rathkit/pack"] }],
   outputs: ["{options.outputPath}"],

@@ -76,7 +76,7 @@ describe("option mapping", () => {
   });
 });
 
-const target = (extra) => ({ executor: "@rathkit/nx:build", options: { outputPath: "{projectRoot}/dist", ...extra } });
+const target = (extra) => ({ executor: "@rathkit/nx-plugin:build", options: { outputPath: "{projectRoot}/dist", ...extra } });
 
 /** The workspace of the inferred-task test, with the targets written by hand and no plugin. */
 function handWritten() {
@@ -87,7 +87,7 @@ function handWritten() {
     const lib = name.startsWith("l");
     files[`${dir}/project.json`] = {
       name: `@ws/${name}`,
-      targets: { build: target({ library: lib }), serve: { executor: "@rathkit/nx:serve", options: {} }, watch: target({ watch: true, library: lib }) },
+      targets: { build: target({ library: lib }), serve: { executor: "@rathkit/nx-plugin:serve", options: {} }, watch: target({ watch: true, library: lib }) },
     };
   }
   return files;
@@ -95,8 +95,8 @@ function handWritten() {
 
 const nxJson = {
   targetDefaults: {
-    "@rathkit/nx:build": { cache: true, dependsOn: ["^build"], inputs: ["default", "^default", "!{projectRoot}/dist/**/*", { externalDependencies: ["@rathkit/pack"] }], outputs: ["{options.outputPath}"] },
-    "@rathkit/nx:serve": { dependsOn: ["^build"] },
+    "@rathkit/nx-plugin:build": { cache: true, dependsOn: ["^build"], inputs: ["default", "^default", "!{projectRoot}/dist/**/*", { externalDependencies: ["@rathkit/pack"] }], outputs: ["{options.outputPath}"] },
+    "@rathkit/nx-plugin:serve": { dependsOn: ["^build"] },
   },
 };
 

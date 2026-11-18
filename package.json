@@ -1,5 +1,5 @@
 {
-  "name": "@rathkit/nx",
+  "name": "@rathkit/nx-plugin",
   "version": "0.1.0-beta.0",
   "description": "An Nx plugin for Rathkit Pack (rkp): inferred build, serve and watch tasks, executors, and an init generator (beta)",
   "license": "Apache-2.0",
@@ -13,10 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rathkit/nx.git"
+    "url": "git+https://github.com/rathkit/nx-plugin.git"
   },
-  "homepage": "https://github.com/rathkit/nx#readme",
-  "bugs": "https://github.com/rathkit/nx/issues",
+  "homepage": "https://github.com/rathkit/nx-plugin#readme",
+  "bugs": "https://github.com/rathkit/nx-plugin/issues",
   "packageManager": "pnpm@12.14.0",
   "type": "commonjs",
   "main": "./plugin.js",

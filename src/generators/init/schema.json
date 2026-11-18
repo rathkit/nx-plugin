@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/schema",
   "version": 2,
-  "title": "Initialize @rathkit/nx",
+  "title": "Initialize @rathkit/nx-plugin",
   "description": "Registers the plugin in nx.json, adds @rathkit/pack to the dev dependencies, and opts projects in with a rathkit.config.mjs.",
   "type": "object",
   "properties": {

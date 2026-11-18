@@ -1,4 +1,4 @@
-# Contributing to @rathkit/nx
+# Contributing to @rathkit/nx-plugin
 
 Thank you for wanting to help. This page is the whole process, in the order you will meet it.
 

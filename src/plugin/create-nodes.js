@@ -73,7 +73,7 @@ function targetsFor(options, ctx) {
   const outputPath = `{projectRoot}/${options.outDir}`;
   const targets = {};
   targets[options.buildTargetName] = {
-    executor: '@rathkit/nx:build',
+    executor: '@rathkit/nx-plugin:build',
     cache: true,
     dependsOn: [`^${options.buildTargetName}`],
     inputs: buildInputs(options, ctx),
@@ -83,7 +83,7 @@ function targetsFor(options, ctx) {
   };
   // A library is not served.
   if (!ctx.library) targets[options.serveTargetName] = {
-    executor: '@rathkit/nx:serve',
+    executor: '@rathkit/nx-plugin:serve',
     cache: false,
     continuous: true,
     dependsOn: [`^${options.buildTargetName}`],
@@ -92,7 +92,7 @@ function targetsFor(options, ctx) {
   };
   if (!ctx.library && ctx.major >= 24) targets[options.serveTargetName].readyWhen = { port: '{options.port ?? 5173}' };
   targets[options.watchTargetName] = {
-    executor: '@rathkit/nx:build',
+    executor: '@rathkit/nx-plugin:build',
     cache: false,
     continuous: true,
     dependsOn: [`^${options.buildTargetName}`],

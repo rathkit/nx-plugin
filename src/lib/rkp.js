@@ -26,7 +26,7 @@ function resolveRkp({ workspaceRoot, projectRoot, rkpBin } = {}) {
 
 function missingMessage(rkp) {
   return (
-    `@rathkit/nx: could not start rkp (${rkp.command}). Install it with "pnpm add -D @rathkit/pack@next" ` +
+    `@rathkit/nx-plugin: could not start rkp (${rkp.command}). Install it with "pnpm add -D @rathkit/pack@next" ` +
     'or set RATHKIT_PACK_BIN to the program.'
   );
 }
@@ -57,9 +57,9 @@ function cleanOutput(outputAbs, { workspaceRoot, projectAbs }) {
     const rel = path.relative(parent, child);
     return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
   };
-  if (!inside(workspaceRoot, outputAbs)) throw new Error(`@rathkit/nx: refusing to clean ${outputAbs}, which is outside the workspace`);
+  if (!inside(workspaceRoot, outputAbs)) throw new Error(`@rathkit/nx-plugin: refusing to clean ${outputAbs}, which is outside the workspace`);
   if (outputAbs === projectAbs || inside(outputAbs, projectAbs) || inside(outputAbs, workspaceRoot)) {
-    throw new Error(`@rathkit/nx: refusing to clean ${outputAbs}, which contains the project`);
+    throw new Error(`@rathkit/nx-plugin: refusing to clean ${outputAbs}, which contains the project`);
   }
   fs.rmSync(outputAbs, { recursive: true, force: true });
 }

@@ -25,7 +25,7 @@ const files = () => ({
   "apps/a/src/env.d.ts": "interface ImportMeta { env: Record<string, string> }\n",
   ".gitignore": "node_modules\n.nx\n.env*\n",
 });
-const nxJson = { plugins: [{ plugin: "@rathkit/nx", options: { env: ["VITE_API"] } }] };
+const nxJson = { plugins: [{ plugin: "@rathkit/nx-plugin", options: { env: ["VITE_API"] } }] };
 
 describe(`cache correctness on nx ${NX_VERSION}`, { skip }, () => {
   let ws;

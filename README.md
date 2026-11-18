@@ -1,4 +1,4 @@
-# @rathkit/nx
+# @rathkit/nx-plugin
 
 An [Nx](https://nx.dev) plugin for [Rathkit Pack](https://github.com/rathkit/pack) (`rkp`), a JavaScript and TypeScript bundler written in Rust with zero dependencies.
 
@@ -7,7 +7,7 @@ An [Nx](https://nx.dev) plugin for [Rathkit Pack](https://github.com/rathkit/pac
 ## Peer dependencies
 
 `nx` and `@nx/devkit` are **peer dependencies**, because that is what an Nx plugin is: it runs inside the Nx of your workspace and uses its API,
-so it must not bring a copy of its own. So is `@rathkit/pack`, the package that gives the `rkp` program. `@rathkit/nx` itself has no
+so it must not bring a copy of its own. So is `@rathkit/pack`, the package that gives the `rkp` program. `@rathkit/nx-plugin` itself has no
 dependencies (`pnpm check:zero-deps` enforces it).
 
 | Peer | Versions | Why |
@@ -19,16 +19,16 @@ dependencies (`pnpm check:zero-deps` enforces it).
 ## Install
 
 ```
-nx add @rathkit/nx
+nx add @rathkit/nx-plugin
 ```
 
-or by hand: `pnpm add -D @rathkit/nx @rathkit/pack@next` and add `"@rathkit/nx"` to `plugins` in `nx.json`.
+or by hand: `pnpm add -D @rathkit/nx-plugin @rathkit/pack@next` and add `"@rathkit/nx-plugin"` to `plugins` in `nx.json`.
 
 ## What it does
 
 - **Inferred tasks** (`createNodes`): a project with a `rathkit.config.{mjs,js,cjs}` next to its `package.json` or `project.json` gets `build`, `serve` and
   `watch`, with inputs, outputs, caching and `dependsOn: ["^build"]` set. See [docs/spike-9.1.md](docs/spike-9.1.md) for how the inputs are chosen.
-- **Executors** `@rathkit/nx:build` and `@rathkit/nx:serve` for targets written by hand in `project.json`.
+- **Executors** `@rathkit/nx-plugin:build` and `@rathkit/nx-plugin:serve` for targets written by hand in `project.json`.
 - **Libraries**: a project whose `package.json` has `main`, `module`, `types` or `exports` (and no `index.html`) builds in library mode: ES module
   (`.mjs`) and CommonJS (`.cjs`) files, declaration files when `typescript` and a `tsconfig.json` are found, packages left external, and a
   `package.json` in the output folder with `main`, `module`, `types` and `exports` written by rkp. The output folder is the package to publish (`pnpm publish dist`).
@@ -49,7 +49,7 @@ Without the plugin (or to override it), use the executors in a `project.json`. O
 ```json
 {
   "targetDefaults": {
-    "@rathkit/nx:build": {
+    "@rathkit/nx-plugin:build": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default", "!{projectRoot}/dist/**/*", { "externalDependencies": ["@rathkit/pack"] }],
@@ -63,8 +63,8 @@ Without the plugin (or to override it), use the executors in a `project.json`. O
 {
   "name": "web",
   "targets": {
-    "build": { "executor": "@rathkit/nx:build", "options": { "outputPath": "{projectRoot}/dist", "minify": true } },
-    "serve": { "executor": "@rathkit/nx:serve", "options": { "port": 4200 } }
+    "build": { "executor": "@rathkit/nx-plugin:build", "options": { "outputPath": "{projectRoot}/dist", "minify": true } },
+    "serve": { "executor": "@rathkit/nx-plugin:serve", "options": { "port": 4200 } }
   }
 }
 ```

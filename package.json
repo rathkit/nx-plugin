@@ -1,6 +1,6 @@
 {
   "name": "@rathkit/nx-plugin",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "An Nx plugin for Rathkit Pack (rkp): inferred build, serve and watch tasks, executors, and an init generator (beta)",
   "license": "Apache-2.0",
   "keywords": [

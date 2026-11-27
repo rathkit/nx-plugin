@@ -112,7 +112,9 @@ export function sampleFiles({ greeting = "hello" } = {}) {
 
 /** The line of an nx run's output for a task such as "web:build" ("> nx run web:build [local cache]"), or undefined. */
 const stripAnsi = (text) => text.replace(/\u001b\[[0-9;]*m/g, "");
-const taskLine = (out, task) => stripAnsi(out).split("\n").map((l) => l.trim()).find((l) => l === `> nx run ${task}` || l.startsWith(`> nx run ${task} `));
+// On GitHub Actions nx wraps each task in a log group: "::group::🔁 > nx run web:build [local cache]" (shown as "##[group]" in the log). The marker and the icon are not the line.
+const unwrap = (line) => line.trim().replace(/^(?:##\[group\]|::group::)\S*\s+/, "");
+const taskLine = (out, task) => stripAnsi(out).split("\n").map(unwrap).find((l) => l === `> nx run ${task}` || l.startsWith(`> nx run ${task} `));
 /** Whether the task was read from the cache. */
 export const wasCached = (out, task) => /\[local cache\]/.test(taskLine(out, task) ?? "");
 /** Whether the task ran and was not read from the cache. */
